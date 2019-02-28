@@ -1,57 +1,16 @@
 import React, { Component } from 'react';
 import Select from 'react-select';
 import { withFormik } from 'formik';
-import * as Yup from 'yup';
 import { positions } from './constants'
-import logo from './logo.svg';
+import formValues from './form-values';
+import formStatus from './form-status';
+import formValidationSchema from './form-schema';
+import formSubmit from './form-submit';
 
 import './App.css';
 
 
-// const options = [
-//   { value: 'chocolate', label: 'Chocolate' },
-//   { value: 'strawberry', label: 'Strawberry' },
-//   { value: 'vanilla', label: 'Vanilla' }
-// ];
-
-const formValues = () => {
-  const values = {
-    firstName: '',
-    lastName: '',
-    phone: '',
-    position: '',
-    comments: '',
-    link: '',
-    file: '',
-  }
-  
-  return values;
-};
-
-const formValidationSchema = Yup.object().shape({
-  firstName: Yup.string()
-    .required('Заполните это поле'),
-  lastName: Yup.string()
-    .required('Заполните это поле'),
-  phone: Yup.string()
-    .matches(/^((\+7|7|8)+([0-9]){10})$/, 'Введите корректный номер телефона')
-    .required('Заполните это поле'),
-  comments: Yup.string()
-    .required('Заполните это поле'),
-  link: Yup.string()
-    .url('Введите корректный адрес'),
-  position: Yup.string()
-    .oneOf(positions, 'Выберите позицию из списка'),
-})
-
-const formSubmit = (values, { setSubmitting, ...formik}) => {
-
-
-  console.log('values',values)
-
-  setSubmitting(false);
-}
-
+const positionValues = positions.map(position => position.value);
 const customStyles = {
   option: (provided, state) => ({
     ...provided,
@@ -95,22 +54,43 @@ const customStyles = {
 }
 
 class InnerForm extends Component {
-  state = {
-    selectedOption: null,
+  constructor(props) {
+    super(props);
+    this.fileInput = React.createRef();
+    this.state = {
+      selectedOption: null,
+    }
   }
-  handleChange = (selectedOption) => {
-    this.setState({ selectedOption });
-    console.log(`Option selected:`, selectedOption);
+
+  handleChange = (e) => {
+    const { setFieldValue } = this.props;
+
+    setFieldValue('position', e.value);
   }
+
+  uploadCV = () => {
+    this.fileInput.current.click();
+  }
+
+  changeFile = (e) => {
+    const { setFieldValue } = this.props;
+    const file = e.target.files[0];
+
+    setFieldValue('file', file);
+  }
+
   render() {
     const {
       handleSubmit,
       handleChange,
+      handleBlur,
       values,
+      errors,
+      touched,
+      isSubmitting,
+      status,
     } = this.props;
-    const { selectedOption } = this.state;
 
-    console.log('values', values);
     return (
       <div className="App">
         <header className="header">
@@ -128,36 +108,93 @@ class InnerForm extends Component {
               <Select
                 // className="form__select"
                 // value={selectedOption}
-                onChange={handleChange}
+                onChange={this.handleChange}
+                onBlur={handleBlur}
                 options={positions}
                 className="form-react-select"
                 styles={customStyles}
                 name='position'
-                value={values.position}
+                // value={values.position}
               />
+              {errors.position && touched.position &&
+                  <span className="form__error">{errors.position}</span>
+                }
             </div>
             <div className="form-contacts">
               <div className="form-field">
-                <input className="form__input" onChange={handleChange}   placeholder="Name" name='firstName' value={values.firstName} />
+                <input
+                  className="form__input"
+                  placeholder="Name"
+                  name='firstName'
+                  value={values.firstName}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                />
+                {errors.firstName && touched.firstName &&  
+                  <span className="form__error">{errors.firstName}</span>
+                }
               </div>
               <div className="form-field">
-                <input className="form__input"  placeholder="Lastname" />
+                <input
+                  className="form__input"
+                  placeholder="Lastname"
+                  name='lastName'
+                  value={values.lastName}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                />
+                {errors.lastName && touched.lastName &&  
+                  <span className="form__error">{errors.lastName}</span>
+                }
               </div>
               <div className="form-field">
-                <input className="form__input"  placeholder="Mobile Phone" />
+                <input
+                  className="form__input"
+                  placeholder="Mobile Phone"
+                  name="phone"
+                  value={values.phone}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                />
+                {errors.phone && touched.phone &&  
+                  <span className="form__error">{errors.phone}</span>
+                }
               </div>
             </div>
             <div className="form-field form-textarea">
-              <textarea className="form__input form__textarea"  placeholder="Comments"></textarea>
+              <textarea
+                className="form__input form__textarea" 
+                placeholder="Comments"
+                name="comments"
+                value={values.comments}
+                onChange={handleChange}
+                onBlur={handleBlur}
+              >
+              </textarea>
+              {errors.comments && touched.comments &&  
+                <span className="form__error">{errors.comments}</span>
+              }
             </div>
             <div className="form-field form__link">
-              <input className="form__input"  placeholder="Link to your CV, ex. http://" />
+              <input
+                className="form__input"
+                placeholder="Link to your CV, ex. http://"
+                name="link"
+                value={values.link}
+                onChange={handleChange}
+                onBlur={handleBlur}
+              />
+              {errors.link && touched.link &&
+                <span className="form__error">{errors.link}</span>
+              }
             </div>
-
-            <a className="form-upload" href="#">Upload CV file</a>
-
-            <button className="form__submit">Send</button>
-
+            <input className="hidden-input" type="file" ref={this.fileInput} onChange={this.changeFile} />
+            <button className="form-upload" type="button" onClick={this.uploadCV}>Upload CV file</button>
+            {values.file.name && 
+              <div className="file-name">attached file name: {values.file.name}</div>
+            }
+            <button className="form__submit" disabled={isSubmitting} type="submit">Send</button>  
+            {!!status.length && <div className="form__success">{status}</div>}
           </form>
         </div>
         <footer className="footer">
@@ -171,6 +208,7 @@ class InnerForm extends Component {
 
 const App = withFormik({
   mapPropsToValues: formValues,
+  mapPropsToStatus: formStatus,
   validationSchema: formValidationSchema,
   handleSubmit: formSubmit,
 })(InnerForm);
