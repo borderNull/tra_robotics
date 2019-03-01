@@ -1,4 +1,4 @@
-# TRA_ROBITICS
+# TRA_ROBOTICS
 test task
 
 # Install instruction
