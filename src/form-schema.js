@@ -17,7 +17,6 @@ const formValidationSchema = Yup.object().shape({
     .url('Fill correct link address, Example: http://www.some-address.com')
     .required('This field is required'),
     position: Yup.string()
-    // .oneOf(positionValues, 'Выберите позицию из списка')
     .required('Choose position from list'),
   })
 
