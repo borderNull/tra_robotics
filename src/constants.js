@@ -4,4 +4,6 @@ export const positions = [
     { value: 'vanilla', label: 'Vanilla' }
   ];
 
+export const mobile = ['Main', 'Careers', 'Offices'];
+
   

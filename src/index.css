@@ -1,3 +1,9 @@
+html {
+  min-height: 100%;
+  position: relative;
+  min-width: 320px;
+}
+
 body {
   margin: 0;
   padding: 0;
@@ -6,9 +12,15 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  height: 100%;
+  position: relative;
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
+}
+
+p {
+  margin: 0;
 }

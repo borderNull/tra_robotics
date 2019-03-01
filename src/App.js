@@ -1,34 +1,41 @@
 import React, { Component } from 'react';
 import Select from 'react-select';
 import { withFormik } from 'formik';
-import { positions } from './constants'
+
+import MobileMenu from './mobile-menu';
+import { positions } from './constants';
 import formValues from './form-values';
 import formStatus from './form-status';
 import formValidationSchema from './form-schema';
 import formSubmit from './form-submit';
 
 import './App.css';
-
-
-const positionValues = positions.map(position => position.value);
+ 
 const customStyles = {
-  option: (provided, state) => ({
-    ...provided,
-    borderBottom: '1px dotted pink',
-    color: state.isSelected ? 'red' : 'blue',
+  option: (styles, state) => ({
+    ...styles,
+    border: 'none',
+    color: '#737882',
     padding: 20,
     width: '100%',
+    backgroundColor: 'transparent',
+    cursor: 'pointer',
+    textAlign: 'left',
+    '&:hover': {
+      color: '#000',
+    },
+    '&:active': {
+      backgroundColor: 'transparent',
+    },
+    alignItems: 'flex-start',
+    justifyContent: 'flex-start',
   }),
-  control: (provided, state) => ({
-    // none of react-select's styles are passed to <Control />
-    // width: 200,
-    // width: '100%',
-    // height: '42px',
-    // borderRadius: '20px',
-    // outline: 'none',
-    // paddingLeft: '14px',
-    // boxSizing: 'border-box',
-    ...provided,
+  menu: (styles) => ({
+    ...styles,
+    borderRadius: '20px',
+  }),
+  control: (styles) => ({
+    ...styles,
     border: '1px solid #d9dbde',
     color: '#737882',
     fontSize: '17px',
@@ -36,20 +43,21 @@ const customStyles = {
     display: 'flex',
     height: '42px',
     borderRadius: '20px',
-    outline: 'none',
-    
+    boxShadow: 'none',
+    '&:hover': {
+      boxShadow: 'none',
+   },
   }),
-  singleValue: (provided, state) => {
-    const opacity = state.isDisabled ? 0.5 : 1;
-    const transition = 'opacity 300ms';
+  indicatorSeparator: (styles) => ({
+    ...styles,
+    display:'none',
+  }),
+  dropdownIndicator: (styles, state) => ({
+    ...styles,
+    transform: state.selectProps.menuIsOpen ? 'rotate(180deg)' : null,
+    cursor: 'pointer',
+  }),
 
-    return { ...provided, opacity, transition };
-  },
-  indicatorSeparator: (provided, state) => {
-    const display = 'none';
-
-    return { ...provided, display };
-  },
 
 }
 
@@ -58,7 +66,7 @@ class InnerForm extends Component {
     super(props);
     this.fileInput = React.createRef();
     this.state = {
-      selectedOption: null,
+      mobileMenu: false, 
     }
   }
 
@@ -79,6 +87,23 @@ class InnerForm extends Component {
     setFieldValue('file', file);
   }
 
+  toggleMobileMenu = (e) => {
+    const isMobileMenuHamburger = e.target.classList.contains('active');
+
+    if (isMobileMenuHamburger) {
+      this.setState({ mobileMenu: false });
+    } else {
+      this.setState({ mobileMenu: true });
+    }
+  }
+
+  hideMobileMenu = (e) => {
+    const isMobileLayer = e.target.classList.contains('mobile-section');
+    if(isMobileLayer) {
+      this.setState({ mobileMenu: false });
+    }
+  }
+
   render() {
     const {
       handleSubmit,
@@ -90,31 +115,28 @@ class InnerForm extends Component {
       isSubmitting,
       status,
     } = this.props;
+    const { mobileMenu } = this.state;
+    const { toggleMobileMenu } = this;
 
     return (
-      <div className="App">
+      <div className="App" onClick={this.hideMobileMenu}>
         <header className="header">
           <p className="header__title">tra robotics</p>
-          <div className="mobile-menu">
-            <div className="mobile-menu__item"></div>
-            <div className="mobile-menu__item"></div>
-            <div className="mobile-menu__item"></div>
-          </div>
+          <MobileMenu  isMobileMenuOpen={mobileMenu} toggleMobileMenu={toggleMobileMenu} />
         </header>
         <div className="form-wrap">
           <h1 className="form__title">Careers. Send us your CV</h1>
           <form className="form" onSubmit={handleSubmit}>
             <div className="form-field">
               <Select
-                // className="form__select"
-                // value={selectedOption}
                 onChange={this.handleChange}
                 onBlur={handleBlur}
                 options={positions}
                 className="form-react-select"
                 styles={customStyles}
                 name='position'
-                // value={values.position}
+                placeholder="Select Position"
+                isSearchable={false}
               />
               {errors.position && touched.position &&
                   <span className="form__error">{errors.position}</span>
@@ -175,7 +197,7 @@ class InnerForm extends Component {
                 <span className="form__error">{errors.comments}</span>
               }
             </div>
-            <div className="form-field form__link">
+            <div className="form-field form-link">
               <input
                 className="form__input"
                 placeholder="Link to your CV, ex. http://"
@@ -188,7 +210,7 @@ class InnerForm extends Component {
                 <span className="form__error">{errors.link}</span>
               }
             </div>
-            <input className="hidden-input" type="file" ref={this.fileInput} onChange={this.changeFile} />
+            <input className="file__input" type="file" ref={this.fileInput} onChange={this.changeFile} />
             <button className="form-upload" type="button" onClick={this.uploadCV}>Upload CV file</button>
             {values.file.name && 
               <div className="file-name">attached file name: {values.file.name}</div>
@@ -199,7 +221,7 @@ class InnerForm extends Component {
         </div>
         <footer className="footer">
           <p className="footer__text">Copyright © 2018, Tra Robotics ltd. All rights reserved.</p>
-          <a className="footer__policy" href="#" >Privacy Policy</a>
+          <p className="footer__policy">Privacy Policy</p>
         </footer>
       </div>
     );

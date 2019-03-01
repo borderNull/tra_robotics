@@ -68,33 +68,118 @@
     box-sizing: border-box;
     padding: 0 64px 0 48px;
 
-
     &__title {
         margin: 0;
         text-transform: uppercase;
+        font-family: '375E5F_0_0', sans-serif;
+    }
+    .mobile-section {
+      position: relative;
+
+      &.visible {
+        &:before {
+          content: '';
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: transparent;
+        }
+      }
+    }
+    
+    .mobile-menu {
+      width: 27px;
+      height: 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      font-size: 13px;
+      transition: all .3s;
+      opacity: .3;
+      cursor: pointer;
+      position: relative;
+    
+      &:hover {
+        opacity: 1;
+      }
+    
+      &__item {
+          height: 1px;
+          background: #000;
+          position: relative;
+          transition: all .3s ease-out;
+      }
+
+      &.active {
+        opacity: 1;
+
+
+        .mobile-menu__item {
+          &:first-of-type {
+            transform: rotate(45deg);
+            top: 5px;
+          }
+          &:nth-of-type(2) {
+            display: none;
+          }
+          &:nth-of-type(3) {
+            transform: rotate(-45deg);
+            top: -10px;
+          }
+        }
+      }
+    
+    }
+    .mobile-list {
+      position: absolute;
+      transition: all .3s;
+      top: 25px;
+      left: -243px;
+      width: 240px;
+      border: 1px solid #000;
+      text-align: left;
+      font-size: 18px;
+      padding: 10px 0;
+      display: none;
+      background: #fff;
+
+      @media(min-width: 320px) and (max-width: 420px) {
+        left: -180px;
+      }
+      &.visible {
+        display: block;
+        z-index: 9999;
+      }
+      &__item {
+        padding: 8px 16px;
+        font-size: 18px;
+        font-family: 'LabGrotesque', sans-serif;
+        opacity: .5;
+        transition: all .3s;
+        cursor: pointer;
+        &:hover {
+          opacity: 1;
+        }
+      }
     }
 }
 
-.mobile-menu {
-    width: 27px;
-    height: 16px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    font-size: 13px;
 
-    &
-
-    &__item {
-        height: 1px;
-        background: #000;
-    }
-}
 
 .form { 
 
+    &-wrap {
+      width: 366px;
+      @media(min-width: 320px) and (max-width: 420px) {
+        width: 80%;
+      }
+    }
+
     &__title {
       font-size: 28px;
+      margin: 0 0 16px;
     }
 
     &-react-select {
@@ -121,10 +206,6 @@
         & .form-field {
             margin-top: 10px;
         }
-    }
-
-    &-wrap {
-      width: 366px;
     }
 
     &-textarea {
@@ -178,7 +259,7 @@
         font-family: 'LabGrotesque-Light', sans-serif;
       }
 
-    &__link {
+    &-link {
       margin-top: 33px;
     }
 
@@ -197,7 +278,7 @@
       margin-top: 8px;
     }
 
-    .hidden-input {
+    .file__input {
       display: none;
     }
 
@@ -229,17 +310,23 @@
 }
 
 .footer {
-    margin-top: 125px;
+    margin-top: 60px;
     font-size: 13px;
     letter-spacing: .2px;
     font-family: 'LabGrotesque-Light', sans-serif;
     &__text {
         color: #161e2e;
+        margin-bottom: 12px;
     }
 
     &__policy {
         color: #737882;
-        // font-size: 13px;
-        // letter-spacing: .2px;
+        text-decoration: underline;
+        cursor: pointer;
+    }
+
+    @media(min-width: 320px) and (max-width: 420px) {
+      width: 64%;
+      margin-bottom: 16px;
     }
 }
